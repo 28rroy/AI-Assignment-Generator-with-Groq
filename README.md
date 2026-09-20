@@ -1,4 +1,7 @@
-# AI Assignment Generator with Groq
+
+# Owlyard — AI Assignment Generator with Groq
+
+Developed as part of my AI Full Stack Developer role at Owlyard, focusing on prompt engineering and validation for AI-generated educational assignments. Shared with permission from Owlyard.
 
 A Python notebook that generates multiple-choice educational assignments using an LLM, checks the response structure, and requests a second model review of the answers and explanations.
 
@@ -63,9 +66,12 @@ python -m pip install openai notebook
 
 ### 2. Configure credentials
 
-Before running the notebook, replace its hard-coded `api_key` value with an environment-variable lookup:
+Before running the notebook, replace its `YOUR_GROQ_API_KEY` placeholder with an environment-variable lookup:
 
 ```python
+import os
+from openai import OpenAI
+
 client = OpenAI(
     api_key=os.environ["GROQ_API_KEY"],
     base_url="https://api.groq.com/openai/v1",
@@ -86,16 +92,37 @@ Edit `userRequestData` and run the cells in order. The notebook prints attempt s
 
 ## Configuration
 
-The current implementation uses these settings:
+The notebook uses this exact Python dictionary:
 
-| Setting | Example | Purpose |
-| --- | --- | --- |
-| `level` | `"middle_school"` | Intended educational level |
-| `subject` | `"math"` | Assignment subject |
-| `topics` | `"solving linear equation, fraction"` | Topics included in the prompt |
-| `moduleQuestionCounts["1"]` | `5` | Number of questions to generate |
+```python
+userRequestData = {
+    "level": "middle_school",
+    "subject": "math",
+    "topics": "solving linear equation, fraction",
+    "numModules": "1",
+    "moduleTypes": { "1": "mcq_4" },
+    "moduleQuestionCounts": { "1": 5 },
+    "multipleCorrect": "no",
+    "explanations": "yes",
+}
+```
 
-Other fields appear in the input dictionary, but the current prompt is fixed to one module of four-option, single-answer questions with explanations and zero point values. Changing those additional fields alone does not change the question format.
+| Field | Format and meaning |
+| --- | --- |
+| `level` | String specifying the educational level. |
+| `subject` | String specifying the assignment subject. |
+| `topics` | A comma-separated string of topics, not a list. |
+| `numModules` | String `"1"` indicating one module. |
+| `moduleTypes` | Dictionary mapping the string module ID `"1"` to `"mcq_4"` (four-option multiple choice). |
+| `moduleQuestionCounts` | Dictionary mapping the string module ID `"1"` to the integer question count `5`. |
+| `multipleCorrect` | String `"no"` indicating one correct answer per question. |
+| `explanations` | String `"yes"` requesting explanations. |
+
+Keep the quoted values as strings; `5` is an integer, and `"yes"`/`"no"` are not Python booleans.
+
+The current code reads `level`, `subject`, `topics`, and `moduleQuestionCounts["1"]`. The other fields describe the intended request, but the prompt currently fixes the format to four options, one correct answer, explanations, and zero point values. Changing those fields alone does not enable additional modules or question formats.
+
+`max_retries` is not a field in `userRequestData`. It is a separate parameter of `generate_assignment(max_retries=5)` that limits generation to five attempts by default.
 
 ## Output format
 
