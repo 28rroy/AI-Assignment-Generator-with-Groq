@@ -2,8 +2,6 @@
 
 A Python notebook that generates multiple-choice educational assignments using an LLM, checks the response structure, and requests a second model review of the answers and explanations.
 
-This project explores how prompt engineering and validation can turn free-form model responses into structured data for educational applications.
-
 ## Overview
 
 The notebook accepts a grade level, subject, topics, and question count. It requests an assignment in JSON format, applies Python validation checks, and asks the same model to review the proposed answers. Responses that fail these checks are regenerated, with up to five generation attempts by default.
@@ -96,7 +94,6 @@ The current implementation uses these settings:
 | `subject` | `"math"` | Assignment subject |
 | `topics` | `"solving linear equation, fraction"` | Topics included in the prompt |
 | `moduleQuestionCounts["1"]` | `5` | Number of questions to generate |
-| `max_retries` | `5` | Maximum generation attempts |
 
 Other fields appear in the input dictionary, but the current prompt is fixed to one module of four-option, single-answer questions with explanations and zero point values. Changing those additional fields alone does not change the question format.
 
@@ -122,21 +119,3 @@ Illustrative example for a one-question request, not a recorded model output:
 ```
 
 Answer indices are zero-based, so `2` identifies the third option. Answers and explanations correspond to the question iteration order.
-
-## Scope and limitations
-
-This is a notebook prototype for experimenting with generation and validation. It does not include a web interface, database, or automated evaluation suite.
-
-- JSON formatting is requested through prompting and checked after generation; it is not enforced through an API-level structured-output schema.
-- The Python validator checks selected structural properties, rather than every field and type in a formal JSON Schema.
-- The same model generates and reviews the assignment, so the review can miss or repeat errors. Human review remains necessary before using generated questions with students.
-- Generation retries handle invalid outputs; the notebook does not implement comprehensive API-error handling or rate-limit backoff.
-- The committed notebook has no saved execution outputs or measured accuracy results.
-
-## Potential improvements
-
-- Add full schema validation and unit tests for malformed responses.
-- Evaluate generated questions against a reviewed set of examples.
-- Add API-error handling, retry backoff, and clearer failure messages.
-- Extend the implementation to support multiple modules and question formats.
-- Move reusable functions into a Python module and retain the notebook as a demonstration.
